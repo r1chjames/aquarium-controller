@@ -1,11 +1,12 @@
 package input
 
 import (
-	"github.com/warthog618/gpiod"
-	"github.com/warthog618/gpiod/device/rpi"
+	"fmt"
+	"github.com/yryz/ds18b20"
 	"gitlab.com/r1chjames/go-aquarium-sensors/mqttBackend"
 	"gitlab.com/r1chjames/go-aquarium-sensors/utils"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -17,27 +18,19 @@ func InitTemperature(stateTopic string, readInterval time.Duration) {
 }
 
 func processTemperature() {
-	temperatureValue := readRawTemperature()
-	mqttBackend.Publish(temperatureStateTopic, string(rune(temperatureValue)))
-}
-
-func readRawTemperature() int {
-	chip, err := gpiod.NewChip("gpiomem")
-	defer chip.Close()
+	sensors, err := ds18b20.Sensors()
 	if err != nil {
-		log.Fatal("Unable to connect to GPIO")
+		log.Fatal("No temperature sensors found")
 	}
 
-	line, err := chip.RequestLine(rpi.GPIO25, gpiod.AsInput)
-	defer line.Close()
-	if err != nil {
-		log.Fatal("Unable to read moisture")
-	}
+	log.Print(fmt.Sprintf("Sensor IDs found: %v\n", sensors))
 
-	val, err := line.Value()
-	if err != nil {
-		log.Fatal("Unable to read moisture")
+	for _, sensor := range sensors {
+		value, err := ds18b20.Temperature(sensor)
+		if err != nil {
+			log.Fatal("Unable to read temperature from sensor")
+		}
+		log.Print(fmt.Sprintf("Sensor: %s temperature: %.2f°C\n", sensor, value))
+		mqttBackend.Publish(temperatureStateTopic, strconv.FormatFloat(value, 'E', -1, 64))
 	}
-
-	return val
 }
