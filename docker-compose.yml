@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  aquarium-controller:
+    build: .
+    environment:
+      - CLIENT_ID: aquarium-controller
+      - BROKER_URL: 192.168.1.206:1883
+
+      - TEMP_SENSOR_ENABLED: true
+      - INPUT_TEMP_TOPIC: aquarium_controller/sensor/aquarium_temperature/state
+      - INPUT_TEMP_DURATION: 2m
+
+      - MOISTURE_SENSOR_ENABLED: true
+      - INPUT_MOISTURE_TOPIC: aquarium_controller/sensor/filter_moisture/state
+      - INPUT_MOISTURE_DURATION: 2m
+
+      - DOSING_PUMP_ENABLED: true
+      - OUTPUT_DOSING_COMMAND_TOPIC: aquarium_controller/control/dosing
+      - OUTPUT_DOSING_STATE_TOPIC: aquarium_controller/control/dosing_

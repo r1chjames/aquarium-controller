@@ -21,7 +21,7 @@ func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 	dosingMessage := parseJsonMessage(msg.Payload())
 	actuatePump(dosingMessage)
 	message := time.Now().String()
-	mqttBackend.Publish(stateAckTopic, message)
+	mqttBackend.Publish(fmt.Sprintf("%s%d", stateAckTopic, dosingMessage.Pump), message)
 }
 
 func actuatePump(message dosingMessage) {

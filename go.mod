@@ -1,4 +1,4 @@
-module gitlab.com/r1chjames/go-aquarium-sensors
+module gitlab.com/r1chjames/aquarium-controller
 
 go 1.15
 
