@@ -1,10 +1,10 @@
 package main
 
 import (
-	"gitlab.com/r1chjames/go-aquarium-sensors/input"
-	"gitlab.com/r1chjames/go-aquarium-sensors/mqttBackend"
-	"gitlab.com/r1chjames/go-aquarium-sensors/output"
-	"gitlab.com/r1chjames/go-aquarium-sensors/utils"
+	"gitlab.com/r1chjames/aquarium-controller/input"
+	"gitlab.com/r1chjames/aquarium-controller/mqttBackend"
+	"gitlab.com/r1chjames/aquarium-controller/output"
+	"gitlab.com/r1chjames/aquarium-controller/utils"
 	"net/url"
 	"time"
 )

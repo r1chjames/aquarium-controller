@@ -5,7 +5,7 @@ import (
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/warthog618/gpiod"
-	"gitlab.com/r1chjames/go-aquarium-sensors/mqttBackend"
+	"gitlab.com/r1chjames/aquarium-controller/mqttBackend"
 	"log"
 	"time"
 )
