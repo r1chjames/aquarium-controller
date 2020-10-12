@@ -13,10 +13,11 @@ import (
 var stateAckTopic string
 var gpioDirectory string
 
-func InitDosing(commandTopic string, stateTopic string, gpioDirectory string) {
+func InitDosing(commandTopic string, stateTopic string, gpioDir string) {
 	log.Print(fmt.Sprintf("Initialising dosing pump module. Command topic: %s, state topic: %s", commandTopic, stateTopic))
 	mqttSub(commandTopic)
 	stateAckTopic = stateTopic
+	gpioDirectory = gpioDir
 }
 
 func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
