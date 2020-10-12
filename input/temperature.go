@@ -31,7 +31,7 @@ func processTemperature() {
 		if err != nil {
 			log.Fatal("Unable to read temperature from sensor")
 		}
-		log.Print(fmt.Sprintf("Sensor: %s temperature: %.2f°C\n", sensor, value))
+		log.Print(fmt.Sprintf("Sensor: %s, temperature: %.2f°C\n", sensor, value))
 		mqttBackend.Publish(temperatureStateTopic, strconv.FormatFloat(value, 'E', -1, 64))
 	}
 }
