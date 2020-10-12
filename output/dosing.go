@@ -33,7 +33,7 @@ func actuatePump(message dosingMessage) {
 	chip, err := gpiod.NewChip(gpioDirectory)
 	defer chip.Close()
 	if err != nil {
-		log.Fatal("Unable to connect to GPIO")
+		log.Fatal(fmt.Sprintf("Unable to connect to GPIO chip: %s", gpioDirectory))
 	}
 
 	line, err := chip.RequestLine(message.Pump, gpiod.AsOutput(1))
