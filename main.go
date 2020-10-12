@@ -16,9 +16,11 @@ func main() {
 }
 
 func initMqtt() {
-	clientId := utils.GetEnv("CLIENT_ID", "aquarium_sensors")
-	brokerUrl := utils.GetEnv("BROKER_URL", "broker")
-	mqttBackend.Connect(clientId, &url.URL{Host: brokerUrl})
+	clientId := utils.GetEnv("MQTT_CLIENT_ID", "aquarium_sensors")
+	brokerUrl := utils.GetEnv("MQTT_BROKER_URL", "broker")
+	user := utils.GetEnv("MQTT_USER", "user")
+	password := utils.GetEnv("MQTT_PASSWORD", "password")
+	mqttBackend.Connect(clientId, &url.URL{Host: brokerUrl, User: url.UserPassword(user, password)})
 }
 
 func initInput() {

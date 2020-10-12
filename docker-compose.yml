@@ -4,8 +4,10 @@ services:
   aquarium-controller:
     build: .
     environment:
-      CLIENT_ID: "aquarium-controller"
-      BROKER_URL: "192.168.1.206:1883"
+      MQTT_CLIENT_ID: "aquarium-controller"
+      MQTT_BROKER_URL: "192.168.1.206:1883"
+      MQTT_USER: "aquariumpi"
+      MQTT_PASSWORD: "VMQrFodL72n3"
 
       TEMP_SENSOR_ENABLED: "true"
       INPUT_TEMP_TOPIC: "aquarium_controller/sensor/aquarium_temperature/state"
