@@ -12,7 +12,6 @@ var mqttClient mqtt.Client
 
 func Connect(clientId string, uri *url.URL) {
 	opts := createClientOptions(clientId, uri)
-	log.Print(opts)
 	client := mqtt.NewClient(opts)
 	token := client.Connect()
 	for !token.WaitTimeout(3 * time.Second) {
