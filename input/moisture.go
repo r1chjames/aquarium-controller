@@ -2,8 +2,8 @@ package input
 
 import (
 	"github.com/warthog618/gpiod/device/rpi"
-	"gitlab.com/r1chjames/go-aquarium-sensors/mqttBackend"
-	"gitlab.com/r1chjames/go-aquarium-sensors/utils"
+	"gitlab.com/r1chjames/aquarium-controller/mqttBackend"
+	"gitlab.com/r1chjames/aquarium-controller/utils"
 	"log"
 	"time"
 	"github.com/warthog618/gpiod"

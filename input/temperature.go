@@ -3,8 +3,8 @@ package input
 import (
 	"fmt"
 	"github.com/yryz/ds18b20"
-	"gitlab.com/r1chjames/go-aquarium-sensors/mqttBackend"
-	"gitlab.com/r1chjames/go-aquarium-sensors/utils"
+	"gitlab.com/r1chjames/aquarium-controller/mqttBackend"
+	"gitlab.com/r1chjames/aquarium-controller/utils"
 	"log"
 	"strconv"
 	"time"
