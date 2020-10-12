@@ -22,3 +22,4 @@ services:
       DOSING_PUMP_ENABLED: "true"
       OUTPUT_DOSING_COMMAND_TOPIC: "aquarium_controller/control/dosing"
       OUTPUT_DOSING_STATE_TOPIC: "aquarium_controller/control/dosing_"
+      GPIO_DIRECTORY: "gpiochip0"

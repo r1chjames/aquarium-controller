@@ -11,8 +11,9 @@ import (
 )
 
 var stateAckTopic string
+var gpioDirectory string
 
-func InitDosing(commandTopic string, stateTopic string) {
+func InitDosing(commandTopic string, stateTopic string, gpioDirectory string) {
 	log.Print(fmt.Sprintf("Initialising dosing pump module. Command topic: %s, state topic: %s", commandTopic, stateTopic))
 	mqttSub(commandTopic)
 	stateAckTopic = stateTopic
@@ -29,7 +30,7 @@ func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 func actuatePump(message dosingMessage) {
 	log.Print(fmt.Sprintf("Starting pump: %d, seconds: %d", message.Pump, message.Seconds))
 
-	chip, err := gpiod.NewChip("gpiomem")
+	chip, err := gpiod.NewChip(gpioDirectory)
 	defer chip.Close()
 	if err != nil {
 		log.Fatal("Unable to connect to GPIO")

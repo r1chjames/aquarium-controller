@@ -44,6 +44,7 @@ func initOutput() {
 	if utils.GetEnv("DOSING_PUMP_ENABLED", "false") != "false" {
 		dosingCommandTopic := utils.GetEnv("OUTPUT_DOSING_COMMAND_TOPIC", "")
 		dosingStateTopic := utils.GetEnv("OUTPUT_DOSING_STATE_TOPIC", "")
-		output.InitDosing(dosingCommandTopic, dosingStateTopic)
+		gpioDirectory := utils.GetEnv("GPIO_DIRECTORY", "gpiochip0")
+		output.InitDosing(dosingCommandTopic, dosingStateTopic, gpioDirectory)
 	}
 }
