@@ -5,8 +5,10 @@ import (
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/warthog618/gpiod"
+	"github.com/warthog618/gpiod/device/rpi"
 	"gitlab.com/r1chjames/aquarium-controller/mqttBackend"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -37,10 +39,11 @@ func actuatePump(message dosingMessage) {
 		log.Fatal(fmt.Sprintf("Unable to connect to GPIO chip: %s", gpioDirectory))
 	}
 
-	line, err := chip.RequestLine(message.Pump, gpiod.AsOutput(1))
+	pumpPin, _ := rpi.Pin(strconv.Itoa(message.Pump))
+	line, err := chip.RequestLine(pumpPin, gpiod.AsOutput(1))
 	defer line.Close()
 	if err != nil {
-		log.Fatal("Unable to send message to pump")
+		log.Fatal(fmt.Sprintf("Unable to send message to pump, GPIO pin: %d", message.Pump))
 	}
 
 	durationToActuate, _ := time.ParseDuration(fmt.Sprintf("%ds", message.Seconds))

@@ -2,12 +2,10 @@ version: '3'
 
 services:
   aquarium-controller:
+    restart: unless-stopped
     build: .
-#    privileged: true
     devices:
       - "/dev/gpiochip0:/dev/gpiochip0"
-#    volumes:
-#      - /sys:/sys
     environment:
       MQTT_CLIENT_ID: "aquarium-controller"
       MQTT_BROKER_URL: "192.168.1.206:1883"
