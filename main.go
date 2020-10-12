@@ -10,9 +10,11 @@ import (
 )
 
 func main() {
+	done := make(chan bool)
 	initMqtt()
-	initInput()
-	initOutput()
+	go initInput()
+	go initOutput()
+	<-done
 }
 
 func initMqtt() {
