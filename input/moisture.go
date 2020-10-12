@@ -1,6 +1,7 @@
 package input
 
 import (
+	"fmt"
 	"github.com/warthog618/gpiod/device/rpi"
 	"gitlab.com/r1chjames/aquarium-controller/mqttBackend"
 	"gitlab.com/r1chjames/aquarium-controller/utils"
@@ -12,7 +13,8 @@ import (
 var moistureStateTopic string
 
 func InitMoisture(stateTopic string, readInterval time.Duration) {
-	stateTopic = stateTopic
+	log.Print(fmt.Sprintf("Initialising moisture sensor module. State topic: %s, read interval: %s", stateTopic, readInterval))
+	moistureStateTopic = stateTopic
 	utils.DoEvery(readInterval, processMoisture)
 }
 

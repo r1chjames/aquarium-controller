@@ -13,6 +13,7 @@ import (
 var temperatureStateTopic string
 
 func InitTemperature(stateTopic string, readInterval time.Duration) {
+	log.Print(fmt.Sprintf("Initialising temperature sensor module. State topic: %s, read interval: %s", stateTopic, readInterval))
 	temperatureStateTopic = stateTopic
 	utils.DoEvery(readInterval, processTemperature)
 }

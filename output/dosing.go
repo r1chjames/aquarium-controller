@@ -13,12 +13,14 @@ import (
 var stateAckTopic string
 
 func InitDosing(commandTopic string, stateTopic string) {
+	log.Print(fmt.Sprintf("Initialising dosing pump module. Command topic: %s, state topic: %s", commandTopic, stateTopic))
 	mqttSub(commandTopic)
 	stateAckTopic = stateTopic
 }
 
 func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 	dosingMessage := parseJsonMessage(msg.Payload())
+	log.Print(fmt.Sprintf("Processing incoming dosing message: %s", string(msg.Payload())))
 	actuatePump(dosingMessage)
 	message := time.Now().String()
 	mqttBackend.Publish(fmt.Sprintf("%s%d", stateAckTopic, dosingMessage.Pump), message)
