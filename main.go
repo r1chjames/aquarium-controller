@@ -11,8 +11,8 @@ import (
 
 func main() {
 	initMqtt()
-	initInput()
-	initOutput()
+	go initInput()
+	go initOutput()
 }
 
 func initMqtt() {
