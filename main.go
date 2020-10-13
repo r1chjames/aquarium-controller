@@ -12,8 +12,9 @@ import (
 func main() {
 	done := make(chan bool)
 	initMqtt()
-	go initInput()
-	go initOutput()
+	go initTemperatureSensorModule()
+	go initMoistureSensorModule()
+	go initDosingPumpModule()
 	<-done
 }
 
@@ -25,14 +26,15 @@ func initMqtt() {
 	mqttBackend.Connect(clientId, &url.URL{Host: brokerUrl, User: url.UserPassword(user, password)})
 }
 
-func initInput() {
-
+func initTemperatureSensorModule() {
 	if utils.GetEnv("TEMP_SENSOR_ENABLED", "false") != "false"{
 		tempStateTopic := utils.GetEnv("INPUT_TEMP_TOPIC", "temperature_topic")
 		tempDuration, _ := time.ParseDuration(utils.GetEnv("INPUT_TEMP_DURATION", "2m"))
 		input.InitTemperature(tempStateTopic, tempDuration)
 	}
+}
 
+func initMoistureSensorModule() {
 	if utils.GetEnv("MOISTURE_SENSOR_ENABLED", "false") != "false" {
 		moistureStateTopic := utils.GetEnv("INPUT_MOISTURE_TOPIC", "moisture_topic")
 		moistureDuration, _ := time.ParseDuration(utils.GetEnv("INPUT_MOISTURE_DURATION", "2m"))
@@ -40,11 +42,12 @@ func initInput() {
 	}
 }
 
-func initOutput() {
+func initDosingPumpModule() {
 	if utils.GetEnv("DOSING_PUMP_ENABLED", "false") != "false" {
 		dosingCommandTopic := utils.GetEnv("OUTPUT_DOSING_COMMAND_TOPIC", "")
 		dosingStateTopic := utils.GetEnv("OUTPUT_DOSING_STATE_TOPIC", "")
 		gpioDirectory := utils.GetEnv("GPIO_DIRECTORY", "gpiochip0")
-		output.InitDosing(dosingCommandTopic, dosingStateTopic, gpioDirectory)
+		timezone := utils.GetEnv("TZ", "Europe/London")
+		output.InitDosing(dosingCommandTopic, dosingStateTopic, gpioDirectory, timezone)
 	}
 }

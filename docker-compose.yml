@@ -7,6 +7,7 @@ services:
     devices:
       - "/dev/gpiochip0:/dev/gpiochip0"
     environment:
+      TZ: "Europe/London"
       MQTT_CLIENT_ID: "aquarium-controller"
       MQTT_BROKER_URL: "192.168.1.206:1883"
       MQTT_USER: "aquariumpi"
