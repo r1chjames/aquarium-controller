@@ -17,7 +17,7 @@ var gpioChip string
 var timezone string
 
 func InitDosing(commandTopic string, stateTopic string, gpioChp string, tz string) {
-	log.Print(fmt.Sprintf("Initialising dosing pump module. Command topic: %s, state topic: %s", commandTopic, stateTopic))
+	log.Printf("Initialising dosing pump module. Command topic: %s, state topic: %s, GPIO chip: %s", commandTopic, stateTopic, gpioChp)
 	mqttSub(commandTopic)
 	stateAckTopic = stateTopic
 	gpioChip = gpioChp
@@ -26,11 +26,11 @@ func InitDosing(commandTopic string, stateTopic string, gpioChp string, tz strin
 
 func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 	dosingMessage := parseJsonMessage(msg.Payload())
-	log.Print(fmt.Sprintf("Processing incoming dosing message: %s", string(msg.Payload())))
+	log.Printf("Processing incoming dosing message: %s", string(msg.Payload()))
 	actuatePump(dosingMessage)
 	loc, err := time.LoadLocation(timezone)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Invalid Timezone: %s", timezone))
+		log.Fatalf("Invalid Timezone: %s", timezone)
 	}
 	t := time.Now().In(loc)
 	mqttBackend.Publish(fmt.Sprintf("%s%d", stateAckTopic, dosingMessage.Pump), t.Format("2006-01-02 15:04:05"))
@@ -38,31 +38,31 @@ func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 
 func actuatePump(message dosingMessage) {
 	pumpPin, _ := rpi.Pin(strconv.Itoa(message.Pump))
-	log.Print(fmt.Sprintf("Starting pump: %d, seconds: %d", pumpPin, message.Seconds))
+	log.Printf("Starting pump: %d, seconds: %d", pumpPin, message.Seconds)
 
 	chip, err := gpiod.NewChip(gpioChip)
 	defer chip.Close()
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Unable to connect to GPIO chip: %s - %s", gpioChip, err))
+		log.Fatalf("Unable to connect to GPIO chip: %s - %s", gpioChip, err)
 	}
 
 	line, err := chip.RequestLine(pumpPin, gpiod.AsOutput(0))
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Unable to request line, GPIO pin: %d - %s", pumpPin, err))
+		log.Fatalf("Unable to request line, GPIO pin: %d - %s", pumpPin, err)
 	}
 
 	err = line.SetValue(0)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err))
+		log.Fatalf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err)
 	}
 
 	durationToActuate, _ := time.ParseDuration(fmt.Sprintf("%ds", message.Seconds))
 	time.AfterFunc(durationToActuate, func() {
 		err := line.SetValue(1)
 		if err != nil {
-			log.Fatal(fmt.Sprintf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err))
+			log.Fatalf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err)
 		}
-		log.Print(fmt.Sprintf("Finished dosing pump: %d", pumpPin))
+		log.Printf("Finished dosing pump: %d", pumpPin)
 		line.Close()
 	})
 }
@@ -70,7 +70,7 @@ func actuatePump(message dosingMessage) {
 func mqttSub(topic string) {
 	token := mqttBackend.Subscribe(topic, parseIncomingMessage)
 	if token.Error() != nil {
-		log.Fatal(fmt.Sprintf("Unable to subscribe. Topic: %s, error: %s", topic, token.Error()))
+		log.Fatalf("Unable to subscribe. Topic: %s, error: %s", topic, token.Error())
 	}
 }
 
@@ -78,7 +78,7 @@ func parseJsonMessage (message []byte) dosingMessage {
 	var dosingMessage dosingMessage
 	err := json.Unmarshal(message, &dosingMessage)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Unable to parse dosing message from MQTT: %s", string(message)))
+		log.Fatalf("Unable to parse dosing message from MQTT: %s", string(message))
 	}
 	return dosingMessage
 }

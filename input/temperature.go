@@ -1,7 +1,6 @@
 package input
 
 import (
-	"fmt"
 	"github.com/yryz/ds18b20"
 	"gitlab.com/r1chjames/aquarium-controller/mqttBackend"
 	"gitlab.com/r1chjames/aquarium-controller/utils"
@@ -13,7 +12,7 @@ import (
 var temperatureStateTopic string
 
 func InitTemperature(stateTopic string, readInterval time.Duration) {
-	log.Print(fmt.Sprintf("Initialising temperature sensor module. State topic: %s, read interval: %s", stateTopic, readInterval))
+	log.Printf("Initialising temperature sensor module. State topic: %s, read interval: %s", stateTopic, readInterval)
 	temperatureStateTopic = stateTopic
 	utils.DoEvery(readInterval, processTemperature)
 }
@@ -24,14 +23,14 @@ func processTemperature() {
 		log.Fatal("No temperature sensors found")
 	}
 
-	log.Print(fmt.Sprintf("Sensor IDs found: %v\n", sensors))
+	log.Printf("Sensor IDs found: %v\n", sensors)
 
 	for _, sensor := range sensors {
 		value, err := ds18b20.Temperature(sensor)
 		if err != nil {
 			log.Fatal("Unable to read temperature from sensor")
 		}
-		log.Print(fmt.Sprintf("Sensor: %s, temperature: %.2f°C\n", sensor, value))
+		log.Printf("Sensor: %s, temperature: %.2f°C\n", sensor, value)
 		mqttBackend.Publish(temperatureStateTopic, strconv.FormatFloat(value, 'E', -1, 64))
 	}
 }

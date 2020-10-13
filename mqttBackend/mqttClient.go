@@ -39,6 +39,6 @@ func Subscribe(topic string, callback func(client mqtt.Client, msg mqtt.Message)
 func Publish(topic string, message string) {
 	token := mqttClient.Publish(topic, 0, false, message)
 	if token.Error() != nil {
-		log.Fatal(fmt.Sprintf("Unable to publish ack message. Topic: %s, message: %s, error: %s", topic, message, token.Error()))
+		log.Fatalf("Unable to publish ack message. Topic: %s, message: %s, error: %s", topic, message, token.Error())
 	}
 }
