@@ -32,8 +32,7 @@ func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 
 func actuatePump(message dosingMessage) {
 	pumpPin, _ := rpi.Pin(strconv.Itoa(message.Pump))
-	durationToActuate, _ := time.ParseDuration(fmt.Sprintf("%ds", message.Seconds))
-	log.Print(fmt.Sprintf("Starting pump: %d, seconds: %d", pumpPin, durationToActuate))
+	log.Print(fmt.Sprintf("Starting pump: %d, seconds: %d", pumpPin, message.Seconds))
 
 	chip, err := gpiod.NewChip(gpioDirectory)
 	defer chip.Close()
@@ -41,18 +40,31 @@ func actuatePump(message dosingMessage) {
 		log.Fatal(fmt.Sprintf("Unable to connect to GPIO chip: %s - %s", gpioDirectory, err))
 	}
 
-	line, err := chip.RequestLine(pumpPin, gpiod.AsOutput(1))
+	line, err := chip.RequestLine(pumpPin, gpiod.AsOutput(0))
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err))
 	}
 
+	lineStatus, _ := line.Info()
+	lineValue, _ := line.Value()
+	log.Print(fmt.Sprintf("Current line status: %s, value: %d", lineStatus, lineValue))
+
+	err = line.SetValue(0)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err))
+	}
+
+	lineValue, _ = line.Value()
+	log.Print(fmt.Sprintf("Current line value: %d", lineValue))
+
+	durationToActuate, _ := time.ParseDuration(fmt.Sprintf("%ds", message.Seconds))
 	time.AfterFunc(durationToActuate, func() {
-		err := line.SetValue(0)
+		err := line.SetValue(1)
 		if err != nil {
 			log.Fatal(fmt.Sprintf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err))
 		}
+		line.Close()
 	})
-	line.Close()
 }
 
 func mqttSub(topic string) {
