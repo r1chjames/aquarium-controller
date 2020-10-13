@@ -13,14 +13,14 @@ import (
 )
 
 var stateAckTopic string
-var gpioDirectory string
+var gpioChip string
 var timezone string
 
-func InitDosing(commandTopic string, stateTopic string, gpioDir string, tz string) {
+func InitDosing(commandTopic string, stateTopic string, gpioChp string, tz string) {
 	log.Print(fmt.Sprintf("Initialising dosing pump module. Command topic: %s, state topic: %s", commandTopic, stateTopic))
 	mqttSub(commandTopic)
 	stateAckTopic = stateTopic
-	gpioDirectory = gpioDir
+	gpioChip = gpioChp
 	timezone = tz
 }
 
@@ -28,7 +28,10 @@ func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 	dosingMessage := parseJsonMessage(msg.Payload())
 	log.Print(fmt.Sprintf("Processing incoming dosing message: %s", string(msg.Payload())))
 	actuatePump(dosingMessage)
-	loc, _ := time.LoadLocation(timezone)
+	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Invalid Timezone: %s", timezone))
+	}
 	t := time.Now().In(loc)
 	mqttBackend.Publish(fmt.Sprintf("%s%d", stateAckTopic, dosingMessage.Pump), t.Format("2006-01-02 15:04:05"))
 }
@@ -37,10 +40,10 @@ func actuatePump(message dosingMessage) {
 	pumpPin, _ := rpi.Pin(strconv.Itoa(message.Pump))
 	log.Print(fmt.Sprintf("Starting pump: %d, seconds: %d", pumpPin, message.Seconds))
 
-	chip, err := gpiod.NewChip(gpioDirectory)
+	chip, err := gpiod.NewChip(gpioChip)
 	defer chip.Close()
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Unable to connect to GPIO chip: %s - %s", gpioDirectory, err))
+		log.Fatal(fmt.Sprintf("Unable to connect to GPIO chip: %s - %s", gpioChip, err))
 	}
 
 	line, err := chip.RequestLine(pumpPin, gpiod.AsOutput(0))

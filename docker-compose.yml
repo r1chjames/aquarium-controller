@@ -8,6 +8,8 @@ services:
       - "/dev/gpiochip0:/dev/gpiochip0"
     environment:
       TZ: "Europe/London"
+      GPIO_CHIP: "gpiochip0"
+
       MQTT_CLIENT_ID: "aquarium-controller"
       MQTT_BROKER_URL: "192.168.1.206:1883"
       MQTT_USER: "aquariumpi"
@@ -20,8 +22,8 @@ services:
       MOISTURE_SENSOR_ENABLED: "true"
       INPUT_MOISTURE_TOPIC: "aquarium_controller/sensor/filter_moisture/state"
       INPUT_MOISTURE_DURATION: "2m"
+      INPUT_MOISTURE_PIN: 25
 
       DOSING_PUMP_ENABLED: "true"
       OUTPUT_DOSING_COMMAND_TOPIC: "aquarium_controller/control/dosing"
       OUTPUT_DOSING_STATE_TOPIC: "aquarium_controller/control/dosing_"
-      GPIO_DIRECTORY: "gpiochip0"

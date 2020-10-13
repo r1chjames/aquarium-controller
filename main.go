@@ -38,7 +38,9 @@ func initMoistureSensorModule() {
 	if utils.GetEnv("MOISTURE_SENSOR_ENABLED", "false") != "false" {
 		moistureStateTopic := utils.GetEnv("INPUT_MOISTURE_TOPIC", "moisture_topic")
 		moistureDuration, _ := time.ParseDuration(utils.GetEnv("INPUT_MOISTURE_DURATION", "2m"))
-		input.InitMoisture(moistureStateTopic, moistureDuration)
+		gpioChip := utils.GetEnv("GPIO_CHIP", "gpiochip0")
+		gpioPin := utils.GetEnv("INPUT_MOISTURE_PIN", "25")
+		input.InitMoisture(moistureStateTopic, moistureDuration, gpioChip, gpioPin)
 	}
 }
 
@@ -46,8 +48,8 @@ func initDosingPumpModule() {
 	if utils.GetEnv("DOSING_PUMP_ENABLED", "false") != "false" {
 		dosingCommandTopic := utils.GetEnv("OUTPUT_DOSING_COMMAND_TOPIC", "")
 		dosingStateTopic := utils.GetEnv("OUTPUT_DOSING_STATE_TOPIC", "")
-		gpioDirectory := utils.GetEnv("GPIO_DIRECTORY", "gpiochip0")
+		gpioChip := utils.GetEnv("GPIO_CHIP", "gpiochip0")
 		timezone := utils.GetEnv("TZ", "Europe/London")
-		output.InitDosing(dosingCommandTopic, dosingStateTopic, gpioDirectory, timezone)
+		output.InitDosing(dosingCommandTopic, dosingStateTopic, gpioChip, timezone)
 	}
 }
