@@ -8,26 +8,13 @@ docker-build-master:
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_DRIVER: overlay2
-    # See https://github.com/docker-library/docker/pull/166
-    DOCKER_TLS_CERTDIR: ""
   services:
     - docker:dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    # Use docker-container driver to allow useful features (push/multi-platform)
-    - update-binfmts --enable
-    - docker buildx create --driver docker-container --use
-    - docker buildx inspect --bootstrap
   script:
-    - >
-        docker buildx build --platform $CI_BUILD_ARCHS 
-        --cache-from=type=registry,ref=$CI_REGISTRY_IMAGE/cache:latest
-        --cache-to=type=registry,ref=$CI_REGISTRY_IMAGE/cache:latest
-        --progress plain 
-        --pull --push 
-        --build-arg CI_PROJECT_PATH=$CI_PROJECT_PATH
-        -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" 
-        -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker buildx create --use
+    - docker buildx build --platform $CI_BUILD_ARCHS -t "$CI_REGISTRY_IMAGE:latest" .
   only:
     - master
 
@@ -37,25 +24,12 @@ docker-build:
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_DRIVER: overlay2
-    # See https://github.com/docker-library/docker/pull/166
-    DOCKER_TLS_CERTDIR: ""
   services:
     - docker:dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    # Use docker-container driver to allow useful features (push/multi-platform)
-    - update-binfmts --enable
-    - docker buildx create --driver docker-container --use
-    - docker buildx inspect --bootstrap
   script:
-    - >
-        docker buildx build --platform $CI_BUILD_ARCHS 
-        --cache-from=type=registry,ref=$CI_REGISTRY_IMAGE/cache:latest
-        --cache-to=type=registry,ref=$CI_REGISTRY_IMAGE/cache:latest
-        --progress plain 
-        --pull --push 
-        --build-arg CI_PROJECT_PATH=$CI_PROJECT_PATH
-        -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" 
-        -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
+    - docker buildx create --use
+    - docker buildx build --platform $CI_BUILD_ARCHS -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
   except:
     - master
