@@ -17,7 +17,6 @@ docker-build-master:
     - docker buildx build --push -t "$CI_REGISTRY_IMAGE:latest" 
       --platform "$CI_BUILD_ARCHS" --cache-from "$CI_REGISTRY_IMAGE"
       --build-arg BUILDKIT_INLINE_CACHE=1 .
-    - docker push "$CI_REGISTRY_IMAGE:latest" 
   only:
     - master
 
@@ -34,6 +33,5 @@ docker-build:
     - docker buildx build --push -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" 
       --platform "$CI_BUILD_ARCHS" --cache-from "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
       --build-arg BUILDKIT_INLINE_CACHE=1 .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   except:
     - master
