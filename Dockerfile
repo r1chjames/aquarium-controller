@@ -1,5 +1,5 @@
 # BASE DEP BUILD STAGE
-FROM golang:latest as build
+FROM golang:alpine3.12 as build
 LABEL maintainer="Richard James<richjames11@gmail.com>"
 ENV GO111MODULE=on
 
@@ -16,7 +16,7 @@ RUN GO111MODULE=on go build -o /app/bin
 
 
 # APP IMAGE BUILD STAGE
-FROM golang:latest
+FROM golang:alpine3.12
 
 COPY --from=build /app /app
 

@@ -3,7 +3,6 @@ variables:
   CI_BUILD_IMAGE: "jdrouet/docker-with-buildx:stable"
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
 
 docker-build-master:
   image: $CI_BUILD_IMAGE
