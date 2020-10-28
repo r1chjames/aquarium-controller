@@ -1,5 +1,5 @@
 variables:
-  CI_BUILD_ARCHS: "linux/amd64"
+  CI_BUILD_ARCHS: "linux/arm/v7"
   CI_BUILD_IMAGE: "jdrouet/docker-with-buildx:stable"
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
@@ -14,6 +14,7 @@ docker-build-master:
   script:
     - docker buildx create --use
     - docker buildx build --platform $CI_BUILD_ARCHS -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   only:
     - master
 
@@ -27,5 +28,6 @@ docker-build:
   script:
     - docker buildx create --use
     - docker buildx build --platform $CI_BUILD_ARCHS -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   except:
     - master
