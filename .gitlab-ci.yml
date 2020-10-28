@@ -1,6 +1,7 @@
 variables:
   CI_BUILD_ARCHS: "linux/amd64,linux/arm/v7"
   CI_BUILD_IMAGE: "jdrouet/docker-with-buildx:stable"
+  DOCKER_TLS_CERTDIR: ""
 
 docker-build-master:
   image: $CI_BUILD_ARCHS
