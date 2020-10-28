@@ -1,6 +1,6 @@
 variables:
-  CI_BUILD_ARCHS: "linux/amd64,linux/arm/v7"
-  CI_BUILD_IMAGE: "ezkrg/buildx"
+  CI_BUILD_ARCHS: "linux/amd64"
+  CI_BUILD_IMAGE: "jdrouet/docker-with-buildx:stable"
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
