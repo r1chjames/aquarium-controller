@@ -5,7 +5,6 @@ import (
 	"github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"net/url"
-	"time"
 )
 
 var mqttClient mqtt.Client
@@ -13,11 +12,8 @@ var mqttClient mqtt.Client
 func Connect(clientId string, uri *url.URL) {
 	opts := createClientOptions(clientId, uri)
 	client := mqtt.NewClient(opts)
-	token := client.Connect()
-	for !token.WaitTimeout(3 * time.Second) {
-	}
-	if err := token.Error(); err != nil {
-		log.Fatal(err)
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
 	}
 	mqttClient = client
 }
@@ -39,6 +35,6 @@ func Subscribe(topic string, callback func(client mqtt.Client, msg mqtt.Message)
 func Publish(topic string, message string) {
 	token := mqttClient.Publish(topic, 0, false, message)
 	if token.Error() != nil {
-		log.Fatal(fmt.Sprintf("Unable to publish ack message. Topic: %s, message: %s, error: %s", topic, message, token.Error()))
+		log.Fatalf("Unable to publish ack message. Topic: %s, message: %s, error: %s", topic, message, token.Error())
 	}
 }

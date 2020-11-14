@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"log"
 	"os"
 )
 
@@ -11,7 +11,7 @@ func GetEnv(key, fallback string) string {
 		if len(fallback) > 0 {
 			return fallback
 		} else {
-			panic(fmt.Sprintf("Required application variable %s not defined", key))
+			log.Fatalf("Required application variable %s not defined", key)
 		}
 	}
 	return value

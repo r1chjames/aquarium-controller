@@ -63,10 +63,10 @@ go-test:
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go test ./...
 
 docker-build:
-	docker build -t registry.gitlab.com/r1chjames/photobox .
+	docker build -t registry.gitlab.com/r1chjames/$(PROJECTNAME) .
 
 docker-push: docker-build
-	docker push registry.gitlab.com/r1chjames/photobox
+	docker push registry.gitlab.com/r1chjames/$(PROJECTNAME)
 
 .PHONY: help
 all: help
