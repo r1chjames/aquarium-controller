@@ -69,7 +69,7 @@ func actuatePump(message dosingMessage) {
 
 func mqttSub(topic string) {
 	token := mqttBackend.Subscribe(topic, parseIncomingMessage)
-	if token.Error() != nil {
+	if token.Wait() && token.Error() != nil {
 		log.Fatalf("Unable to subscribe. Topic: %s, error: %s", topic, token.Error())
 	}
 }

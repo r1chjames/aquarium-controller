@@ -5,7 +5,6 @@ import (
 	"github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"net/url"
-	"time"
 )
 
 var mqttClient mqtt.Client
@@ -13,11 +12,8 @@ var mqttClient mqtt.Client
 func Connect(clientId string, uri *url.URL) {
 	opts := createClientOptions(clientId, uri)
 	client := mqtt.NewClient(opts)
-	token := client.Connect()
-	for !token.WaitTimeout(3 * time.Second) {
-	}
-	if err := token.Error(); err != nil {
-		log.Fatal(err)
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
 	}
 	mqttClient = client
 }
