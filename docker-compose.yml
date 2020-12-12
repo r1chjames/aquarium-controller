@@ -3,7 +3,7 @@ version: '3'
 services:
   aquarium-controller:
     restart: unless-stopped
-    build: .
+    image: registry.gitlab.com/r1chjames/aquarium-controller:latest
     devices:
       - "/dev/gpiochip0:/dev/gpiochip0"
     environment:
