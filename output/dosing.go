@@ -46,19 +46,19 @@ func actuatePump(message dosingMessage) {
 		log.Fatalf("Unable to connect to GPIO chip: %s - %s", gpioChip, err)
 	}
 
-	line, err := chip.RequestLine(pumpPin, gpiod.AsActiveHigh)
+	line, err := chip.RequestLine(pumpPin, gpiod.AsOutput(1))
 	if err != nil {
 		log.Fatalf("Unable to request line, GPIO pin: %d - %s", pumpPin, err)
 	}
 
-	//err = line.SetValue(0)
-	//if err != nil {
-	//	log.Fatalf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err)
-	//}
+	err = line.SetValue(1)
+	if err != nil {
+		log.Fatalf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err)
+	}
 
 	durationToActuate, _ := time.ParseDuration(fmt.Sprintf("%ds", message.Seconds))
 	time.AfterFunc(durationToActuate, func() {
-		err := line.Reconfigure(gpiod.AsActiveLow)
+		err := line.SetValue(0)
 		if err != nil {
 			log.Fatalf("Unable to send message to pump, GPIO pin: %d - %s", pumpPin, err)
 		}
