@@ -6,6 +6,7 @@ import (
 	"gitlab.com/r1chjames/aquarium-controller/utils"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -26,11 +27,13 @@ func processTemperature() {
 	log.Printf("Sensor IDs found: %v\n", sensors)
 
 	for _, sensor := range sensors {
-		value, err := ds18b20.Temperature(sensor)
-		if err != nil {
-			log.Fatal("Unable to read temperature from sensor")
+		if strings.HasPrefix(sensor, "28") {
+			value, err := ds18b20.Temperature(sensor)
+			if err != nil {
+				log.Fatal("Unable to read temperature from sensor")
+			}
+			log.Printf("Sensor: %s, temperature: %.2f°C\n", sensor, value)
+			mqttBackend.Publish(temperatureStateTopic, strconv.FormatFloat(value, 'E', -1, 64))
 		}
-		log.Printf("Sensor: %s, temperature: %.2f°C\n", sensor, value)
-		mqttBackend.Publish(temperatureStateTopic, strconv.FormatFloat(value, 'E', -1, 64))
 	}
 }
