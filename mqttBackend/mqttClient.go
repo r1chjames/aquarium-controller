@@ -3,6 +3,7 @@ package mqttBackend
 import (
 	"fmt"
 	"github.com/eclipse/paho.mqtt.golang"
+	"github.com/jasonlvhit/gocron"
 	"log"
 	"net/url"
 )
@@ -16,6 +17,7 @@ func Connect(clientId string, uri *url.URL) {
 		log.Fatal(token.Error())
 	}
 	mqttClient = client
+	go startConnectionMonitor()
 }
 
 func createClientOptions(clientId string, uri *url.URL) *mqtt.ClientOptions {
@@ -29,7 +31,21 @@ func createClientOptions(clientId string, uri *url.URL) *mqtt.ClientOptions {
 }
 
 func Subscribe(topic string, callback func(client mqtt.Client, msg mqtt.Message)) mqtt.Token {
-	return mqttClient.Subscribe(topic, 0, callback)
+	return mqttClient.Subscribe(topic, 2, callback)
+}
+
+func IsConnected() bool {
+	connected := mqttClient.IsConnected()
+	if !connected {
+		log.Fatal("MQTT disconnected")
+	}
+
+	return connected
+}
+
+func startConnectionMonitor() {
+	gocron.Every(5).Minutes().Do(IsConnected)
+	<- gocron.Start()
 }
 
 func Publish(topic string, message string) {
