@@ -48,8 +48,8 @@ func startConnectionMonitor() {
 	<- gocron.Start()
 }
 
-func Publish(topic string, message string) {
-	token := mqttClient.Publish(topic, 0, false, message)
+func Publish(topic string, message string, retain bool) {
+	token := mqttClient.Publish(topic, 0, retain, message)
 	if token.Error() != nil {
 		log.Fatalf("Unable to publish ack message. Topic: %s, message: %s, error: %s", topic, message, token.Error())
 	}

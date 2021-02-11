@@ -33,7 +33,7 @@ func parseIncomingMessage(_ mqtt.Client, msg mqtt.Message) {
 		log.Fatalf("Invalid Timezone: %s", timezone)
 	}
 	t := time.Now().In(loc)
-	mqttBackend.Publish(fmt.Sprintf("%s%d", stateAckTopic, dosingMessage.Pump), t.Format("2006-01-02 15:04:05"))
+	mqttBackend.Publish(fmt.Sprintf("%s%d", stateAckTopic, dosingMessage.Pump), t.Format("2006-01-02 15:04:05"), true)
 }
 
 func actuatePump(message dosingMessage) {

@@ -24,7 +24,7 @@ func InitMoisture(stateTopic string, readInterval time.Duration, gpioChp string,
 
 func processMoisture() {
 	moistureValue := readRawMoisture()
-	mqttBackend.Publish(moistureStateTopic, strconv.Itoa(moistureValue))
+	mqttBackend.Publish(moistureStateTopic, strconv.Itoa(moistureValue), true)
 }
 
 func readRawMoisture() int {
