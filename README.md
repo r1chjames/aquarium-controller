@@ -1,6 +1,7 @@
-Aquarium Controller written in GO
-
+# Aquarium Controller written in GO
 ---
+
+Application that reads sensor data from connected sensors. Included is a dosing module that allows attached dosing pumps to be actuated. All communication is via MQTT.
 
 Inputs:
 - Temperature
@@ -9,7 +10,7 @@ Inputs:
 Outputs:
 - Dosing pump
 
-# Installation
+## Installation
 For use on a Raspberry Pi, additional modules need to be loaded:
 
 ```

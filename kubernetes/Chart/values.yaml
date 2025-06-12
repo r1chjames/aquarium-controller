@@ -1,0 +1,66 @@
+image:
+  repository: registry.gitlab.com/r1chjames/aquarium-controller
+  tag: latest
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+
+deployments:
+  - name: aquarium
+    nodeSelector: "node1"
+    env:
+      TZ: "Europe/London"
+      GPIO_CHIP: "gpiochip0"
+      MQTT_CLIENT_ID: "client-id"
+      MQTT_BROKER_URL: "broker:1883"
+      MQTT_USER: "mqtt-user"
+      MQTT_PASSWORD: "mqtt-password"
+      TEMP_SENSOR_ENABLED: "true"
+      INPUT_TEMP_TOPIC: "aquarium_controller/sensor/aquarium_temperature/state"
+      INPUT_TEMP_DURATION: "5m"
+      MOISTURE_SENSOR_ENABLED: "true"
+      INPUT_MOISTURE_TOPIC: "aquarium_controller/sensor/filter_moisture/state"
+      INPUT_MOISTURE_DURATION: "5m"
+      INPUT_MOISTURE_PIN: "25"
+      DOSING_PUMP_ENABLED: "true"
+      OUTPUT_DOSING_COMMAND_TOPIC: "aquarium_controller/control/dosing"
+      OUTPUT_DOSING_STATE_TOPIC: "aquarium_controller/control/dosing_"
+    tolerations:
+      - key: "type"
+        value: "node1"
+        effect: "NoSchedule"
+  - name: nano_aquarium
+    nodeSelector: "node2"
+    env:
+      TZ: "Europe/London"
+      GPIO_CHIP: "gpiochip0"
+      MQTT_CLIENT_ID: "nano-aquarium-controller"
+      MQTT_BROKER_URL: "vernemq.infra:1883"
+      MQTT_USER: "aquariumpi"
+      MQTT_PASSWORD: "VMQrFodL72n3"
+      TEMP_SENSOR_ENABLED: "true"
+      INPUT_TEMP_TOPIC: "nano_aquarium_controller/sensor/aquarium_temperature/state"
+      INPUT_TEMP_DURATION: "5m"
+      MOISTURE_SENSOR_ENABLED: "true"
+      INPUT_MOISTURE_TOPIC: "nano_aquarium_controller/sensor/filter_moisture/state"
+      INPUT_MOISTURE_DURATION: "5m"
+      INPUT_MOISTURE_PIN: "25"
+      DOSING_PUMP_ENABLED: "true"
+      OUTPUT_DOSING_COMMAND_TOPIC: "nano_aquarium_controller/control/dosing"
+      OUTPUT_DOSING_STATE_TOPIC: "nano_aquarium_controller/control/dosing_"
+    tolerations:
+      - key: "type"
+        value: "node2"
+        effect: "NoSchedule"
+
+resources:
+  limits:
+    cpu: "50m"
+    memory: "64Mi"
+    smarter-devices/gpiochip0: 1
+  requests:
+    cpu: "20m"
+    memory: "64Mi"
+    smarter-devices/gpiochip0: 1
+

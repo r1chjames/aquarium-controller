@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smarter-device-manager-rpi
+  namespace: kube-system
+data:
+  conf.yaml: |
+        - devicematch: ^snd$
+          nummaxdevices: 20
+        - devicematch: ^gpiomem$
+          nummaxdevices: 40
+        - devicematch: ^gpiochip[0-9]*$
+          nummaxdevices: 20
+        - devicematch: ^hci[0-9]*$
+          nummaxdevices: 1
+        - devicematch: ^i2c-[0-9]*$
+          nummaxdevices: 1
+        - devicematch: ^rtc0$
+          nummaxdevices: 20
+        - devicematch: ^video[0-9]*$
+          nummaxdevices: 20
+        - devicematch: ^vchiq$
+          nummaxdevices: 20
+        - devicematch: ^vcsm.*$
+          nummaxdevices: 20
+        - devicematch: ^ttyUSB[0-9]*$
+          nummaxdevices: 1
+        - devicematch: ^ttyACM[0-9]*$
+          nummaxdevices: 1
+        - devicematch: ^ttyTHS[0-9]*$
+          nummaxdevices: 1
+        - devicematch: ^ttyS[0-9]*$
+          nummaxdevices: 1
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: smarter-device-manager
+  namespace: kube-system
+  labels:
+    name: smarter-device-manager
+    role: agent
+spec:
+  selector:
+    matchLabels:
+      name: smarter-device-manager
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels: 
+        name: smarter-device-manager
+      annotations:
+        node.kubernetes.io/bootstrap-checkpoint: "true"
+    spec: 
+      nodeSelector:
+        smarter-device-manager : enabled
+      priorityClassName: "system-node-critical"
+      hostname: smarter-device-management
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: smarter-device-manager
+                operator: In
+                values:
+                - enabled
+      containers:
+      - name: smarter-device-manager
+        image: registry.gitlab.com/arm-research/smarter/smarter-device-manager:v1.20.7
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          limits:
+            cpu: 100m
+            memory: 15Mi
+          requests:
+            cpu: 10m
+            memory: 15Mi
+        volumeMounts:
+          - name: device-plugin
+            mountPath: /var/lib/kubelet/device-plugins
+          - name: dev-dir
+            mountPath: /dev
+          - name: sys-dir
+            mountPath: /sys
+          - name: config
+            mountPath: /root/config
+      tolerations:
+      - key: "type"
+        value: "node1"
+        effect: "NoSchedule"
+      - key: "type"
+        value: "no"
+        effect: "NoSchedule"
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+        - name: dev-dir
+          hostPath:
+            path: /dev
+        - name: sys-dir
+          hostPath:
+            path: /sys
+        - name: config
+          configMap:
+             name: smarter-device-manager-rpi
+      terminationGracePeriodSeconds: 30
